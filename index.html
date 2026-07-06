@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -9,7 +9,9 @@
 
 body {
 margin: 0;
-font-family: -apple-system, BlinkMacSystemFont, "Calibri", Roboto;
+font-family: -apple-system, BlinkMacSystemFont, "Calibri", 
+
+Roboto;
 background: #D3D3D3;
 font-size: 16px;
 }
@@ -132,7 +134,9 @@ box-shadow: 0 0 10px rgba(0,0,0,0.15);
         <h1>Databáza slovenského botanického menoslovia</h1>
     </div>
     <div class="search-card">
-        <input id="search" placeholder="Zadajte meno rastliny..." />
+        <input id="search" placeholder="Zadajte meno rastliny..." 
+
+/>
     </div>
 
 
@@ -150,7 +154,9 @@ box-shadow: 0 0 10px rgba(0,0,0,0.15);
 
 
 <footer class="footer">
-    © Slovenská botanická spoločnosť pri SAV, 2026
+    © Slovenská botanická spoločnosť pri 
+
+SAV, 2026
 </footer>
 
 
@@ -159,14 +165,20 @@ box-shadow: 0 0 10px rgba(0,0,0,0.15);
 let data = [];
 
 async function loadData() {
-    const res = await fetch("./data.json");
-    data = await res.json();
+const res = await fetch("https://botanik13.github.io/botanika-
 
-    initApp(); // 👈 spusti appku až teraz
+db/data.json");
+
+const clone = res.clone();
+console.log(await clone.text());
+
+data = await res.json();
+initApp();
+; // 👈 spusti appku až teraz
 }
 
 loadData();
-    
+
 function initApp() {
     const input = document.getElementById("search");
 
@@ -194,6 +206,7 @@ function initApp() {
 }
 
 
+
 // normalizácia textu
 function normalize(str) {
     return (str || "")
@@ -202,6 +215,7 @@ function normalize(str) {
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+// SEARCH
 // RENDER LIST
 function render(results) {
 

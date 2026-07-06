@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Botanické menoslovie</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+margin: 0;
+font-family: -apple-system, BlinkMacSystemFont, "Calibri", Roboto;
+background: #D3D3D3;
+font-size: 16px;
+}
+
+
+
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+
+.latin,
+.slovak,
+.meta,
+.card,
+#detail,
+input {
+font-size: 20px;
+}
+
+
+/* HLAVNÝ KONTENER */
+.container {
+max-width: 1400px;
+margin: 0 auto;
+padding: 20px;
+background: #f5f1dc;
+min-height: calc(100vh - 40px);
+}
+
+
+/* HEADER */
+.header {
+width: 100%;
+text-align: center;
+padding: 20px 0;
+}
+
+
+
+/* SEARCH */
+.search-card {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* LAYOUT */
+.app {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.left,
+.right {
+flex: 1;
+}
+
+.right {
+position: sticky;
+top: 20px;
+}
+
+
+
+/* CARDS */
+.card {
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* DETAIL */
+#detail {
+background: white;
+padding: 12px;
+border-radius: 12px;
+min-height: 100px;
+
+/* 👇 DÔLEŽITÉ */
+visibility: hidden;
+}
+
+.footer {
+max-width: 1100px;
+margin: 15px auto 20px auto;
+padding: 12px 20px;
+background: white;
+border-radius: 12px;
+text-align: center;
+font-size: 14px;
+color: #555;
+box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <div class="header">
+        <h1>Databáza slovenského botanického menoslovia</h1>
+    </div>
+    <div class="search-card">
+        <input id="search" placeholder="Zadajte meno rastliny..." />
+    </div>
+
+
+    <div class="app">
+
+<div class="left">
+<div id="results"></div>
+</div>
+
+<div class="right">
+<div id="detail"></div>
+</div>
+
+</div>
+
+
+<footer class="footer">
+    © Slovenská botanická spoločnosť pri SAV, 2026
+</footer>
+
+
+<script>
+
+let data = [];
+
+async function loadData() {
+    const res = await fetch("data.json?cache=" + Date.now());
+    data = await res.json();
+
+    initApp(); // 👈 spusti appku až teraz
+}
+
+function initApp() {
+    const input = document.getElementById("search");
+
+    input.addEventListener("input", (e) => {
+        const q = normalize(e.target.value.trim());
+
+        if (q.length < 2) {
+            document.getElementById("results").innerHTML = "";
+            return;
+        }
+
+        const results = data.filter(item => {
+            const haystack = normalize(
+                (item.taxon || "") + " " +
+                (item.slovak_name || "") + " " +
+                (item.family || "") + " " +
+                (item.other_common_names || "")
+            );
+
+            return haystack.includes(q);
+        });
+
+        render(results);
+    });
+}
+
+loadData();
+
+
+
+// normalizácia textu
+function normalize(str) {
+    return (str || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+// SEARCH
+window.addEventListener("DOMContentLoaded", () => {
+
+    const input = document.getElementById("search");
+
+    if (!input) return;
+
+
+    input.addEventListener("input", (e) => {
+
+        const q = normalize(e.target.value.trim());
+
+        if (q.length < 2) {
+        document.getElementById("results").innerHTML = "";
+        return;
+        }
+
+
+        const results = data.filter(item => {
+
+            const haystack = normalize(
+                (item.taxon || "") + " " +
+                (item.slovak_name || "") + " " +
+                (item.family || "") + " " +
+                (item.other_common_names || "")
+            );
+
+            return haystack.includes(q);
+        });
+
+        render(results);
+    });
+});
+
+// RENDER LIST
+function render(results) {
+
+document.getElementById("results").innerHTML = results.map(r => {
+
+        const badge = r.status === "D"
+? "✔️ Accepted"
+: "❌ Synonymum";
+
+      return `
+<div class="card" onclick="openItem('${r.taxon_id}')">
+
+<div class="latin">
+<i>${r.taxon || ""}</i> ${r.author || ""}
+</div>
+
+<div class="meta">${badge}</div>
+
+<div class="slovak">
+${r.slovak_name || ""}
+</div>
+
+<div class="meta">
+${r.family || ""}
+</div>
+
+</div>
+`;
+    }).join("");
+}
+
+function openItem(taxon_id) {
+
+const item = data.find(x => x.taxon_id == taxon_id);
+if (!item) return;
+
+const accepted = data.find(x => x.taxon_id == item.accepted_id);
+
+if (!accepted) {
+document.getElementById("detail").innerHTML =
+"<div class='card'>❌ Accepted záznam nenájdený</div>";
+return;
+}
+
+const synonyms = data.filter(x =>
+x.accepted_id == item.accepted_id &&
+x.status == "S"
+);
+
+// ✅ TU až teraz môžeš robiť logiku
+const hasAcceptedNames = !!accepted.other_common_names;
+const hasSynonymNames = synonyms.some(s => s.other_common_names);
+
+const detail = document.getElementById("detail");
+detail.style.visibility = "visible";
+
+document.getElementById("detail").innerHTML = `
+<div class="card">
+
+<div class="latin">
+<i>${accepted.taxon || ""}</i> ${accepted.author || ""}
+</div>
+
+<div class="slovak">
+🇸🇰 ${accepted.slovak_name || ""}
+</div>
+
+<div class="meta">
+🌿 ${accepted.family || ""}
+</div>
+
+<hr>
+
+<b>Staršie slovenské mená</b><br>
+${
+hasAcceptedNames
+? accepted.other_common_names
+: (hasSynonymNames
+? "pozri synonymá"
+: "v databáze nie sú uvedené")
+}
+
+<br><br>
+
+<b>Synonymá</b>
+<ul>
+${
+synonyms.length
+? synonyms.map(s => `
+<li>
+<i>${s.taxon}</i> ${s.author || ""}
+${s.other_common_names ? ` (${s.other_common_names})` : ""}
+</li>
+`).join("")
+: "<li>v databáze nie sú uvedené</li>"
+}
+</ul>
+
+<hr>
+
+<b>Poznámky</b><br>
+${accepted.note || "žiadne poznámky"}
+
+</div>
+`;
+}
+
+
+</script>
+
+</body>
+</html>

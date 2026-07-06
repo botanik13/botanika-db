@@ -159,12 +159,14 @@ box-shadow: 0 0 10px rgba(0,0,0,0.15);
 let data = [];
 
 async function loadData() {
-    const res = await fetch("data.json?cache=" + Date.now());
+    const res = await fetch("./data.json");
     data = await res.json();
 
     initApp(); // 👈 spusti appku až teraz
 }
 
+loadData();
+    
 function initApp() {
     const input = document.getElementById("search");
 
@@ -191,9 +193,6 @@ function initApp() {
     });
 }
 
-loadData();
-
-
 
 // normalizácia textu
 function normalize(str) {
@@ -202,40 +201,6 @@ function normalize(str) {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 }
-
-// SEARCH
-window.addEventListener("DOMContentLoaded", () => {
-
-    const input = document.getElementById("search");
-
-    if (!input) return;
-
-
-    input.addEventListener("input", (e) => {
-
-        const q = normalize(e.target.value.trim());
-
-        if (q.length < 2) {
-        document.getElementById("results").innerHTML = "";
-        return;
-        }
-
-
-        const results = data.filter(item => {
-
-            const haystack = normalize(
-                (item.taxon || "") + " " +
-                (item.slovak_name || "") + " " +
-                (item.family || "") + " " +
-                (item.other_common_names || "")
-            );
-
-            return haystack.includes(q);
-        });
-
-        render(results);
-    });
-});
 
 // RENDER LIST
 function render(results) {

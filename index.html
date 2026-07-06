@@ -292,8 +292,8 @@ function render(results) {
 document.getElementById("results").innerHTML = results.map(r => {
 
         const badge = r.status === "D"
-? "✔️ Accepted"
-: "❌ Synonymum";
+? "✔️ "
+: "❌ synonymum";
 
       return `
 <div class="card" onclick="openItem('${r.taxon_id}')">
@@ -331,7 +331,7 @@ function openItem(taxon_id) {
 
     if (!accepted) {
         document.getElementById("detail").innerHTML =
-            "<div class='card'>❌ Accepted záznam nenájdený</div>";
+            "<div class='card'>❌ Platný záznam nenájdený</div>";
         return;
     }
 

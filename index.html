@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="icon.png">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="utf-8">
+
 <title>Botanické menoslovie</title>
 
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="icon.png">
 <style>
 * { box-sizing: border-box; }
 
@@ -88,7 +90,13 @@ position: sticky;
 top: 20px;
 }
 
-
+.back-btn {
+    background: white;
+    border: none;
+    font-size: 22px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
 
 /* CARDS */
 .card {
@@ -121,8 +129,54 @@ font-size: 14px;
 color: #555;
 box-shadow: 0 0 10px rgba(0,0,0,0.15);
 }
+    
+.hidden {
+    display: none;
+}
+    
+/* Mobil */
+@media (max-width: 768px) {
 
+    .app {
+        flex-direction: column;
+    }
 
+    .left,
+    .right {
+        width: 100%;
+    }
+
+    .right {
+        display: none;
+        position: static;
+        margin-top: 15px;
+    }
+
+    .header h1 {
+        font-size: 34px;
+    }
+
+    input {
+        font-size: 24px;
+        padding: 16px;
+    }
+
+    .card,
+    #detail,
+    .latin,
+    .slovak,
+    .meta {
+        font-size: 24px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .footer {
+        font-size: 18px;
+    }
+}
 </style>
 
 </head>
@@ -156,9 +210,7 @@ box-shadow: 0 0 10px rgba(0,0,0,0.15);
 
 
 <footer class="footer">
-    © Slovenská botanická spoločnosť pri 
-
-SAV, 2026
+    © MH 2026, Citácia: Kliment J., Hrabovský M., Letz D. R., Eliáš P. ml., Kučera J., Mártonfi P., Guričanová D., Vančová I., Feráková V., Goliašová K., Hodálová I., Kochjarová J., Marhold K., Turisová I. 2025: Slovenského botanické menoslovie – cievnaté rastliny. Veda, Bratislava.
 </footer>
 
 
@@ -257,81 +309,93 @@ ${r.family || ""}
 `;
     }).join("");
 }
-
+function backToResults() {
+    if (window.innerWidth <= 768) {
+        document.querySelector(".right").style.display = "none";
+        document.querySelector(".left").style.display = "block";
+    }
+}
 function openItem(taxon_id) {
 
-const item = data.find(x => x.taxon_id == taxon_id);
-if (!item) return;
+    const item = data.find(x => x.taxon_id == taxon_id);
+    if (!item) return;
 
-const accepted = data.find(x => x.taxon_id == item.accepted_id);
+    const accepted = data.find(x => x.taxon_id == item.accepted_id);
 
-if (!accepted) {
-document.getElementById("detail").innerHTML =
-"<div class='card'>❌ Accepted záznam nenájdený</div>";
-return;
-}
+    if (!accepted) {
+        document.getElementById("detail").innerHTML =
+            "<div class='card'>❌ Accepted záznam nenájdený</div>";
+        return;
+    }
 
-const synonyms = data.filter(x =>
-x.accepted_id == item.accepted_id &&
-x.status == "S"
-);
+    const synonyms = data.filter(x =>
+        x.accepted_id == item.accepted_id &&
+        x.status == "S"
+    );
 
-// ✅ TU až teraz môžeš robiť logiku
-const hasAcceptedNames = !!accepted.other_common_names;
-const hasSynonymNames = synonyms.some(s => s.other_common_names);
+    const hasAcceptedNames = !!accepted.other_common_names;
+    const hasSynonymNames = synonyms.some(s => s.other_common_names);
 
-const detail = document.getElementById("detail");
-detail.style.visibility = "visible";
+    // MOBILE SWITCH (iba vizuál)
+    if (window.innerWidth <= 768) {
+        document.querySelector(".left").style.display = "none";
+        document.querySelector(".right").style.display = "block";
+    }
 
-document.getElementById("detail").innerHTML = `
-<div class="card">
+    const detail = document.getElementById("detail");
+    detail.style.visibility = "visible";
 
-<div class="latin">
-<i>${accepted.taxon || ""}</i> ${accepted.author || ""}
-</div>
+    detail.innerHTML = `
+        <button class="back-btn" onclick="backToResults()">← Späť</button>
 
-<div class="slovak">
-🇸🇰 ${accepted.slovak_name || ""}
-</div>
+        <div class="card">
 
-<div class="meta">
-🌿 ${accepted.family || ""}
-</div>
+            <div class="latin">
+                <i>${accepted.taxon || ""}</i> ${accepted.author || ""}
+            </div>
 
-<hr>
+            <div class="slovak">
+                🇸🇰 ${accepted.slovak_name || ""}
+            </div>
 
-<b>Staršie slovenské mená</b><br>
-${
-hasAcceptedNames
-? accepted.other_common_names
-: (hasSynonymNames
-? "pozri synonymá"
-: "v databáze nie sú uvedené")
-}
+            <div class="meta">
+                🌿 ${accepted.family || ""}
+            </div>
 
-<br><br>
+            <hr>
 
-<b>Synonymá</b>
-<ul>
-${
-synonyms.length
-? synonyms.map(s => `
-<li>
-<i>${s.taxon}</i> ${s.author || ""}
-${s.other_common_names ? ` (${s.other_common_names})` : ""}
-</li>
-`).join("")
-: "<li>v databáze nie sú uvedené</li>"
-}
-</ul>
+            <b>Staršie slovenské mená</b><br>
+            ${
+                hasAcceptedNames
+                    ? accepted.other_common_names
+                    : (hasSynonymNames
+                        ? "pozri synonymá"
+                        : "v databáze nie sú uvedené")
+            }
 
-<hr>
+            <br><br>
 
-<b>Poznámky</b><br>
-${accepted.note || "žiadne poznámky"}
+            <b>Synonymá</b>
+            <ul>
+                ${
+                    synonyms.length
+                        ? synonyms.map(s => `
+                            <li>
+                                <i>${s.taxon}</i> ${s.author || ""}
+                                ${s.other_common_names ? ` (${s.other_common_names})` : ""}
+                            </li>
+                        `).join("")
+                        : "<li>v databáze nie sú uvedené</li>"
+                }
+            </ul>
 
-</div>
-`;
+            <hr>
+
+            <b>Poznámky</b><br>
+            ${accepted.note || "žiadne poznámky"}
+
+        </div>
+    `;
 }
 
 

@@ -166,7 +166,7 @@ let data = [];
 
 async function loadData() {
 try {
-const res = await fetch("./data.json");
+const res = await fetch("./data.json?v=" + Date.now());
 
 if (!res.ok) {
 throw new Error("HTTP error " + res.status);

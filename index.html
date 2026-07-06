@@ -165,24 +165,24 @@ SAV, 2026
 let data = [];
 
 async function loadData() {
-try {
-const res = await fetch("./data06072026.json);
+    try {
+        const res = await fetch("./data06072026.json");
 
-if (!res.ok) {
-throw new Error("HTTP error " + res.status);
-}
+        if (!res.ok) {
+            throw new Error("HTTP error " + res.status);
+        }
 
-data = await res.json();
+        data = await res.json();
 
-console.log("Data loaded:", data.length);
+        console.log("Data loaded:", data.length);
 
-initApp();
+        initApp();
 
-} catch (err) {
-console.error("CHYBA NAČÍTANIA DÁT:", err);
-document.getElementById("results").innerHTML =
-"<div class='card'>❌ Nepodarilo sa načítať dáta</div>";
-}
+    } catch (err) {
+        console.error("CHYBA NAČÍTANIA DÁT:", err);
+        document.getElementById("results").innerHTML =
+            "<div class='card'>❌ Nepodarilo sa načítať dáta</div>";
+    }
 }
 
 loadData();

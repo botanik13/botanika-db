@@ -12,7 +12,7 @@ Interaktívna webová databáza rastlinných taxónov so slovenskými názvami, 
 
 ## Editori
 
-- Ján Kliment  
+- † Ján Kliment  
 - Michal Hrabovský  
 - Dominik Roman Letz  
 
@@ -20,7 +20,7 @@ Interaktívna webová databáza rastlinných taxónov so slovenskými názvami, 
 
 ## Autori
 
-- Ján Kliment¹  
+- † Ján Kliment¹  
 - Michal Hrabovský²  
 - Dominik Roman Letz³  
 - Pavol Eliáš ml.⁴  

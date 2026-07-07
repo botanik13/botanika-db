@@ -38,7 +38,10 @@ input {
 font-size: 20px;
 }
 
-
+.card-aut {
+    background: #fff3cd;
+}
+    
 /* HLAVNÝ KONTENER */
 .container {
 max-width: 1400px;
@@ -296,8 +299,9 @@ document.getElementById("results").innerHTML = results.map(r => {
 : "❌ synonymum";
 
       return `
-<div class="card" onclick="openItem('${r.taxon_id}')">
-
+<div class="card ${r.note === 'aut' ? 'card-aut' : ''}"
+     onclick="openItem('${r.taxon_id}')">
+     
 <div class="latin">
 <i>${r.taxon || ""}</i> ${r.author || ""}
 </div>

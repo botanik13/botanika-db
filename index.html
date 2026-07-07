@@ -38,8 +38,20 @@ input {
 font-size: 20px;
 }
 
-.card-aut {
-    background: #fff3cd;
+.card-auto {
+    background: #e8f5e9;
+}
+
+.card-natur {
+    background: #e3f2fd;
+}
+
+.card-pesto {
+    background: #fff9c4;
+}
+
+.card-inv {
+    background: #ffebee;
 }
     
 /* HLAVNÝ KONTENER */
@@ -298,10 +310,27 @@ document.getElementById("results").innerHTML = results.map(r => {
 ? "✔️ "
 : "❌ synonymum";
 
+          let cardClass = "";
+
+const note = normalize(r.note || "");
+
+if (note.startsWith("auto")) {
+    cardClass = "card-auto";
+}
+else if (note.startsWith("natur")) {
+    cardClass = "card-natur";
+}
+else if (note.startsWith("pesto")) {
+    cardClass = "card-pesto";
+}
+else if (note.startsWith("inv")) {
+    cardClass = "card-inv";
+}
+
       return `
-<div class="card ${r.note === 'autochtónny taxón' ? 'card-aut' : ''}"
-     onclick="openItem('${r.taxon_id}')">
-     
+
+<div class="card ${cardClass}" onclick="openItem('${r.taxon_id}')">
+
 <div class="latin">
 <i>${r.taxon || ""}</i> ${r.author || ""}
 </div>

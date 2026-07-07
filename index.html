@@ -299,7 +299,7 @@ document.getElementById("results").innerHTML = results.map(r => {
 : "❌ synonymum";
 
       return `
-<div class="card ${r.note === 'aut' ? 'card-aut' : ''}"
+<div class="card ${r.note === 'autochtónny taxón' ? 'card-aut' : ''}"
      onclick="openItem('${r.taxon_id}')">
      
 <div class="latin">

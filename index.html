@@ -115,7 +115,7 @@ min-height: 100px;
 visibility: hidden;
 }
 .card-auto {
-    background: #e8f5e9;
+    background: #56f593;
 }
 
 .card-natur {
@@ -313,19 +313,29 @@ document.getElementById("results").innerHTML = results.map(r => {
 
 const note = normalize(r.note || "");
 
-if (note.startsWith("auto")) {
-    cardClass = "card-auto";
-}
-else if (note.startsWith("natur")) {
-    cardClass = "card-natur";
-}
-else if (note.startsWith("pesto")) {
-    cardClass = "card-pesto";
-}
-else if (note.startsWith("inv")) {
-    cardClass = "card-inv";
-}
+const positions = [
+    { word: "auto", className: "card-auto" },
+    { word: "natur", className: "card-natur" },
+    { word: "pesto", className: "card-pesto" },
+    { word: "inv", className: "card-inv" }
+];
 
+let firstMatch = null;
+
+positions.forEach(item => {
+    const pos = note.indexOf(item.word);
+
+    if (pos !== -1 && (firstMatch === null || pos < firstMatch.pos)) {
+        firstMatch = {
+            pos: pos,
+            className: item.className
+        };
+    }
+});
+
+if (firstMatch) {
+    cardClass = firstMatch.className;
+}
       return `
 
 <div class="card ${cardClass}" onclick="openItem('${r.taxon_id}')">
